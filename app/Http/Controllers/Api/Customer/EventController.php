@@ -1,18 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Event;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class EventController extends Controller
 {
     public function index(){
-        $events = Event::query()->with('getCategory')->get();
+        $events = Event::query()->where('user_id',Auth::user()->id)
+                    ->with('getCategory')->get();
         return response([
             'events' => $events,
         ], 200);
@@ -93,6 +95,7 @@ class EventController extends Controller
                 'logo' => $logoPath,
                 'banner' => $bannerPath,
                 'gallery_image' => $gallery_imagePath,
+                'user_id' => Auth::user()->id,
                 'featured' => $request->has('featured'),
             ]);
 
