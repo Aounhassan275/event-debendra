@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\TempUser;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -75,17 +76,22 @@ class AuthController extends Controller
             $request->validate([
                 'email' => 'required|email|unique:users',
                 'password' => 'required|min:6',
+                'phone' => 'required',
                 'confirm_password' => 'required|same:password',
             ]);
-
-            $user = new User();
+            $user = TempUser::where('email',$request->email)->first();
+            if(!$user){
+                $user = new TempUser();
+            }
             $user->email = $request->email;
+            $user->phone = $request->phone;
             $user->password = Hash::make($request->password);
-            $user->user_type = 1;
+            $user->verification_code = random_int(1000, 9999);
+            $user->expires_at =  Carbon::now()->addMinutes(15);
             $user->save();
             $response = [
-                'user' => $user,
-                'message' => 'Vendor created successfully!'
+                'verification_code' =>  $user->verification_code,
+                'message' => 'Verfication Code Sended Successfully!'
             ];
             return response($response, 201);
         }catch(Exception $e){
@@ -145,14 +151,22 @@ class AuthController extends Controller
                 'verification_code' => 'required|numeric',
             ]);
             // Check email
-            $user = User::where('verification_code', $fields['verification_code'])->where('code_expires_at','>=',Carbon::now())->first();
-            if(!$user)
+            $tempUser = TempUser::where('verification_code', $fields['verification_code'])
+                    ->where('expires_at','>=',Carbon::now())->first();
+            if(!$tempUser)
             {
                 return response([
                     "success" => false,
                     "message" => 'Invalid OTP',
                 ], 401);
             }
+            $user = new User();
+            $user->email = $tempUser->email;
+            $user->phone = $tempUser->phone;
+            $user->password = $tempUser->password;
+            $user->user_type = 1;
+            $user->save();
+            $tempUser->delete();
             return response([
                 'user' => $user,
                 'message' => 'OTP Verified Successfully!'

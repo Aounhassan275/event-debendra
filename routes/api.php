@@ -10,6 +10,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 Route::post('admin/login',[AuthController::class,'adminLogin']);
 Route::post('vendor/login',[AuthController::class,'vendorLogin']);
+Route::post('vendor/register',[AuthController::class,'vendorRegister']);
 Route::post('send_verification_code', [AuthController::class,'sendVerificationCode']);
 Route::post('verify_otp', [AuthController::class,'verifyOtp']);
 Route::post('set_new_password', [AuthController::class,'setNewPassword']);

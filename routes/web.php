@@ -44,6 +44,7 @@ use App\Http\Controllers\vendor\PricingController;
 use App\Http\Controllers\vendor\GalleryController;
 use App\Http\Controllers\vendor\ReviewController;
 use App\Http\Controllers\Web\IndexController;
+use Illuminate\Support\Facades\Artisan;
 
 Route::get('/login', [AuthAuthController::class, 'Login'])->name('login');
 Route::post('/login', [AuthAuthController::class, 'checkLogin'])->name('auth.checkLogin');
@@ -193,5 +194,18 @@ Route::get('/contact',[IndexController::class, 'contact'])->name('web.contact');
 Route::get('/events',[IndexController::class, 'events'])->name('web.events');
 
 
+Route::get('/migrate', function() {
+    Artisan::call('migrate');
+    Artisan::call('config:cache');
+    Artisan::call('view:clear');
+    Artisan::call('cache:clear');
+    return 'Migration done';
+  });
+  Route::get('/cache_clear', function() {
+    Artisan::call('config:cache');
+    Artisan::call('view:clear');
+    Artisan::call('cache:clear');
+    return 'Cache Clear DOne';
+  });
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin-auth.php';
