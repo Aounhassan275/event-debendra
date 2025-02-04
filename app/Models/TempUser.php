@@ -13,6 +13,7 @@ class TempUser extends Model
         'expires_at',
         'password',
         'phone',
-        'is_verified'
+        'is_verified',
+        'user_type',
     ];
 }

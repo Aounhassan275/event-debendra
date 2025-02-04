@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-Route::post('admin/login',[AuthController::class,'adminLogin']);
+Route::post('customer/login',[AuthController::class,'customerLogin']);
+Route::post('register',[AuthController::class,'register']);
 Route::post('vendor/login',[AuthController::class,'vendorLogin']);
-Route::post('vendor/register',[AuthController::class,'vendorRegister']);
 Route::post('send_verification_code', [AuthController::class,'sendVerificationCode']);
 Route::post('verify_otp', [AuthController::class,'verifyOtp']);
 Route::post('set_new_password', [AuthController::class,'setNewPassword']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::group(['prefix' => 'admin','middleware' => 'admin'], function () { 
+    Route::group(['prefix' => 'customer','middleware' => 'customer'], function () { 
         Route::get('events',[EventController::class,'index']);
         Route::post('event-store',[EventController::class,'store']);
         Route::get('get-categories',[EventController::class,'getcategories']);

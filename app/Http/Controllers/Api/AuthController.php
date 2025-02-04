@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function adminLogin(Request $request) {
+    public function customerLogin(Request $request) {
         $fields = $request->validate([
             'email' => 'required|string',
             'password' => 'required|string'
@@ -21,7 +21,7 @@ class AuthController extends Controller
 
         // Check email
         $user = User::where('email', $fields['email'])
-                ->where('user_type',0)->first();
+                ->where('user_type', 2)->first();
         if(!$user)
         {
             return response([
@@ -50,7 +50,8 @@ class AuthController extends Controller
 
         // Check email
         $user = User::where('email', $fields['email'])
-                ->where('user_type',operator: 1)->whereNotNull('vendor_type')->first();
+                ->where('user_type', 1)
+                ->whereNotNull('vendor_type')->first();
         if(!$user)
         {
             return response([
@@ -71,12 +72,13 @@ class AuthController extends Controller
         return response($response, 201);
 
     }
-    public function vendorRegister(Request $request) {
+    public function register(Request $request) {
         try{
             $request->validate([
                 'email' => 'required|email|unique:users',
                 'password' => 'required|min:6',
                 'phone' => 'required',
+                'user_type' => 'required',
                 'confirm_password' => 'required|same:password',
             ]);
             $user = TempUser::where('email',$request->email)->first();
@@ -85,6 +87,7 @@ class AuthController extends Controller
             }
             $user->email = $request->email;
             $user->phone = $request->phone;
+            $user->user_type = $request->user_type;
             $user->password = Hash::make($request->password);
             $user->verification_code = random_int(1000, 9999);
             $user->expires_at =  Carbon::now()->addMinutes(15);
@@ -164,11 +167,13 @@ class AuthController extends Controller
             $user->email = $tempUser->email;
             $user->phone = $tempUser->phone;
             $user->password = $tempUser->password;
-            $user->user_type = 1;
+            $user->user_type = $tempUser->user_type;
             $user->save();
+            $token = $user->createToken('myapptoken')->plainTextToken;
             $tempUser->delete();
             return response([
                 'user' => $user,
+                'token' => $token,
                 'message' => 'OTP Verified Successfully!'
             ], 200);
         }catch(Exception $e){
