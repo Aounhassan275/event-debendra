@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Customer\EventController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Vendor\VendorProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,8 +24,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('profile-update',[EventController::class,'update']);
     Route::get('logout', [AuthController::class,'logout']);
     Route::group(['prefix' => 'vendor','middleware' => 'vendor'], function () { 
-        Route::get('/user', function (Request $request) {
-            return $request->user();
-        });
+        Route::get('get-vendor-types', [VendorProfileController::class,'getVendorTypes']);
+        Route::post('update-vendor-type', [VendorProfileController::class,'updateVendorType']);
+        Route::post('update-vendor-profile', [VendorProfileController::class,'updateVendorProfile']);
     });
 });
