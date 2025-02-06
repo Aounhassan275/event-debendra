@@ -19,7 +19,9 @@ Route::post('set_new_password', [AuthController::class,'setNewPassword']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'customer','middleware' => 'customer'], function () { 
         Route::get('events',[EventController::class,'index']);
+        Route::get('get-event/{id}',[EventController::class,'show']);
         Route::post('event-store',[EventController::class,'store']);
+        Route::post('event-like-dislike',[EventController::class,'eventLikeDislike']);
         Route::get('get-categories',[EventController::class,'getcategories']);
     }); 
     Route::post('profile-update',[EventController::class,'update']);

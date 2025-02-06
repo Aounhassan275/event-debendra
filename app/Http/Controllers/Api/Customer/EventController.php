@@ -19,6 +19,21 @@ class EventController extends Controller
             'events' => $events,
         ], 200);
     }
+    public function show($id){
+        try{ 
+            $event = Event::find($id);
+            return response([
+                'event' => $event,
+            ], 200);
+        }catch (Exception $e)
+        {
+            return response([
+                "success" => false,
+                "message" => $e->getMessage(),
+            ], 500);
+        }
+
+    }
     public function getcategories(){
         $categories = Category::query()->get();
         return response([
@@ -101,6 +116,35 @@ class EventController extends Controller
 
             return response([
                 'event' => $event,
+                'message' => 'Event added successfully!',
+            ], 200);
+        }catch (Exception $e)
+        {
+            return response([
+                "success" => false,
+                "message" => $e->getMessage(),
+            ], 500);
+        }
+
+    }
+    public function eventLikeDislike(Request $request)
+    {
+        try{        
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required',
+                'is_like' => 'required|integer',
+            ]);
+            if ($validator->fails()) {
+                $messages = $validator->getMessageBag();
+                return response([
+                    "success" => false,
+                    "message" => $messages->first(),
+                ], 500);
+            }
+
+
+            
+            return response([
                 'message' => 'Event added successfully!',
             ], 200);
         }catch (Exception $e)
