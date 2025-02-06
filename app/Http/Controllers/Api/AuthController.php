@@ -118,36 +118,6 @@ class AuthController extends Controller
         }
        
     }
-    public function sendVerificationCode(Request $request) {
-        try{
-            $fields = $request->validate([
-                'phone' => 'required|string',
-            ]);
-            // Check email
-            $user = User::where('email', $fields['email'])->first();
-            if(!$user)
-            {
-                return response([
-                    "success" => false,
-                    "message" => 'User Not Found!',
-                ], 401);
-            }
-            $user->verification_code = random_int(10000, 99999);
-            $user->code_expires_at =  Carbon::now()->addMinutes(15);
-            $user->save();
-            // $emailService = new EmailService();
-            // $emailService->sendVerification($user);
-            return response([
-                'user' => $user,
-                'message' => 'Verification Code Send successfully!'
-            ], 200);
-        }catch(Exception $e){
-            return response([
-                "success" => false,
-                "message" => $e->getMessage(),
-            ], 500);
-        }
-    }
     public function verifyOtp(Request $request) {
         try{
             $fields = $request->validate([
@@ -174,6 +144,62 @@ class AuthController extends Controller
             return response([
                 'user' => $user,
                 'token' => $token,
+                'message' => 'OTP Verified Successfully!'
+            ], 200);
+        }catch(Exception $e){
+            return response([
+                "success" => false,
+                "message" => $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function sendVerificationCode(Request $request) {
+        try{
+            $fields = $request->validate([
+                'email' => 'required|string',
+            ]);
+            // Check email
+            $user = User::where('email', $fields['email'])->first();
+            if(!$user)
+            {
+                return response([
+                    "success" => false,
+                    "message" => 'User Not Found!',
+                ], 401);
+            }
+            $user->verification_code = random_int(10000, 99999);
+            $user->code_expires_at =  Carbon::now()->addMinutes(15);
+            $user->save();
+            // $emailService = new EmailService();
+            // $emailService->sendVerification($user);
+            return response([
+                'user' => $user,
+                'message' => 'Verification Code Send successfully!'
+            ], 200);
+        }catch(Exception $e){
+            return response([
+                "success" => false,
+                "message" => $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function verifyOtpForPassword(Request $request) {
+        try{
+            $fields = $request->validate([
+                'verification_code' => 'required|numeric',
+            ]);
+            // Check email
+            $user = User::where('verification_code', $fields['verification_code'])
+                    ->where('expires_at','>=',Carbon::now())->first();
+            if(!$user)
+            {
+                return response([
+                    "success" => false,
+                    "message" => 'Invalid OTP',
+                ], 401);
+            }
+            return response([
+                'user' => $user,
                 'message' => 'OTP Verified Successfully!'
             ], 200);
         }catch(Exception $e){

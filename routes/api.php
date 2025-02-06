@@ -14,6 +14,7 @@ Route::post('register',[AuthController::class,'register']);
 Route::post('vendor/login',[AuthController::class,'vendorLogin']);
 Route::post('send_verification_code', [AuthController::class,'sendVerificationCode']);
 Route::post('verify_otp', [AuthController::class,'verifyOtp']);
+Route::post('verify_otp_for_password', [AuthController::class,'verifyOtpForPassword']);
 Route::post('set_new_password', [AuthController::class,'setNewPassword']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'customer','middleware' => 'customer'], function () { 
