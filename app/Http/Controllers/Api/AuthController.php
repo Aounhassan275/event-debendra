@@ -190,7 +190,7 @@ class AuthController extends Controller
             ]);
             // Check email
             $user = User::where('verification_code', $fields['verification_code'])
-                    ->where('expires_at','>=',Carbon::now())->first();
+                    ->where('code_expires_at','>=',Carbon::now())->first();
             if(!$user)
             {
                 return response([
