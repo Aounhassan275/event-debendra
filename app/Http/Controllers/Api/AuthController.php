@@ -211,7 +211,7 @@ class AuthController extends Controller
     }
     public function setNewPassword(Request $request) {
         try{
-            $this->validate($request,[
+            $request->validate([
                 'user_id' => 'required|numeric',
                 'password' => 'required'
             ]);
