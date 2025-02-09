@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\Customer;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Event;
+use App\Models\EventLikeDislike;
+use App\Models\RecentEvent;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,9 +14,24 @@ use Illuminate\Support\Facades\Validator;
 
 class EventController extends Controller
 {
-    public function index(){
-        $events = Event::query()->where('user_id',Auth::user()->id)
-                    ->with('getCategory')->get();
+    public function index(Request $request){
+
+        $query = Event::query()->where('user_id',Auth::user()->id);
+        if($request->category_id){
+            $query->where('category',$request->category_id);
+        }
+        $events = $query->with('getCategory')->get();
+        return response([
+            'events' => $events,
+        ], 200);
+    }
+    public function getAllEvents(Request $request){
+
+        $query = Event::query();
+        if($request->category_id){
+            $query->where('category',$request->category_id);
+        }
+        $events = $query->with('getCategory')->get();
         return response([
             'events' => $events,
         ], 200);
@@ -131,7 +148,7 @@ class EventController extends Controller
     {
         try{        
             $validator = Validator::make($request->all(), [
-                'user_id' => 'required',
+                'event_id' => 'required|integer',
                 'is_like' => 'required|integer',
             ]);
             if ($validator->fails()) {
@@ -141,11 +158,78 @@ class EventController extends Controller
                     "message" => $messages->first(),
                 ], 500);
             }
-
-
-            
+            $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
+                        ->where('event_id',$request->event_id)->first();
+            if($eventLiked){
+                $eventLiked->update([
+                    'is_like' => $request->is_like
+                ]);
+            }else{
+                EventLikeDislike::create([
+                    'event_id' => $request->event_id,
+                    'is_like' => $request->is_like,
+                    'user_id' => Auth::user()->id,
+                ]);
+            }
             return response([
-                'message' => 'Event added successfully!',
+                'message' => 'Event Bookmarked added successfully!',
+            ], 200);
+        }catch (Exception $e)
+        {
+            return response([
+                "success" => false,
+                "message" => $e->getMessage(),
+            ], 500);
+        }
+
+    }
+    public function getLikedEvents(){
+        $eventIds = EventLikeDislike::where('is_like',1)->get()->pluck('event_id')->toArray();
+        $events = Event::query()->whereIn('id',$eventIds)->with('getCategory')->get();
+        return response([
+            'events' => $events,
+        ], 200);
+    }
+    public function getDisLikedEvents(){
+        $eventIds = EventLikeDislike::where('is_like',0)->get()->pluck('event_id')->toArray();
+        $events = Event::query()->whereIn('id',$eventIds)->with('getCategory')->get();
+        return response([
+            'events' => $events,
+        ], 200);
+    }
+    public function getRecentEvents(){
+        $eventIds = RecentEvent::where('user_id',Auth::user()->id)
+                    ->orderBy('created_at','DESC')->get()
+                    ->pluck('event_id')->toArray();
+        $events = Event::query()->whereIn('id',$eventIds)->with('getCategory')->get();
+        return response([
+            'events' => $events,
+        ], 200);
+    }
+    public function storeRecentEvent(Request $request)
+    {
+        try{        
+            $validator = Validator::make($request->all(), [
+                'event_id' => 'required|integer',
+            ]);
+            if ($validator->fails()) {
+                $messages = $validator->getMessageBag();
+                return response([
+                    "success" => false,
+                    "message" => $messages->first(),
+                ], 500);
+            }
+            $event = RecentEvent::where('user_id',Auth::user()->id)
+                        ->where('event_id',$request->event_id)->first();
+            RecentEvent::create([
+                'event_id' => $request->event_id,
+                'user_id' => Auth::user()->id,
+            ]);
+            if($event){
+                $event->delete();
+            }
+            return response([
+                'message' => 'Event added to recent successfully!',
             ], 200);
         }catch (Exception $e)
         {

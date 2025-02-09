@@ -18,11 +18,16 @@ Route::post('verify_otp_for_password', [AuthController::class,'verifyOtpForPassw
 Route::post('set_new_password', [AuthController::class,'setNewPassword']);
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'customer','middleware' => 'customer'], function () { 
+        Route::get('get-categories',[EventController::class,'getcategories']);
         Route::get('events',[EventController::class,'index']);
+        Route::get('all-events',[EventController::class,'getAllEvents']);
         Route::get('get-event/{id}',[EventController::class,'show']);
         Route::post('event-store',[EventController::class,'store']);
         Route::post('event-like-dislike',[EventController::class,'eventLikeDislike']);
-        Route::get('get-categories',[EventController::class,'getcategories']);
+        Route::get('get-liked-events',[EventController::class,'getLikedEvents']);
+        Route::get('get-disliked-events',[EventController::class,'getDisLikedEvents']);
+        Route::get('get-recent-events',[EventController::class,'getRecentEvents']);
+        Route::post('store-recent-event',[EventController::class,'storeRecentEvent']);
     }); 
     Route::post('profile-update',[EventController::class,'update']);
     Route::get('logout', [AuthController::class,'logout']);
