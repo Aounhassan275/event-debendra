@@ -23,6 +23,7 @@ class EventController extends Controller
         $events = $query->with('getCategory')->get();
         return response([
             'events' => $events,
+            'base_url' => 'https://einvie.com/admin/images/uploads/event/',
         ], 200);
     }
     public function getAllEvents(Request $request){
@@ -34,6 +35,7 @@ class EventController extends Controller
         $events = $query->with('getCategory')->get();
         return response([
             'events' => $events,
+            'base_url' => 'https://einvie.com/admin/images/uploads/event/',
         ], 200);
     }
     public function show($id){
@@ -41,6 +43,7 @@ class EventController extends Controller
             $event = Event::find($id);
             return response([
                 'event' => $event,
+                'base_url' => 'https://einvie.com/admin/images/uploads/event/',
             ], 200);
         }catch (Exception $e)
         {
