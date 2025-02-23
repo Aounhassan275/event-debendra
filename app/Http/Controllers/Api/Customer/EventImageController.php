@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\EventImage;
+use App\Models\EventImageLikeDislike;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -59,6 +60,12 @@ class EventImageController extends Controller
             }
             $eventImages = EventImage::where('event_id',$request->event_id)
                         ->orderBy('created_at','DESC')->get();
+            foreach($eventImages as $eventImage){
+                $eventImage->likes = EventImageLikeDislike::where('is_like',1)
+                        ->where('event_image_id',$eventImage->id)->count();
+                $eventImage->dislikes = EventImageLikeDislike::where('is_like',0)
+                        ->where('event_image_id',$eventImage->id)->count();
+            }
             return response([
                 'eventImages' => $eventImages,
                 'base_url' => 'https://einvie.com/admin/images/uploads/event/',

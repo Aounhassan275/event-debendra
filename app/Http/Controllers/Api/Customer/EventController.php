@@ -21,6 +21,15 @@ class EventController extends Controller
             $query->where('category',$request->category_id);
         }
         $events = $query->with('getCategory','eventImages')->get();
+        foreach($events as $event){
+            $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
+                        ->where('event_id',$event->id)->first();
+            if($eventLiked){
+                $event->is_like = $eventLiked->is_like;
+            }else{
+                $event->is_like = null;
+            }
+        }
         return response([
             'events' => $events,
             'base_url' => 'https://einvie.com/admin/images/uploads/event/',
@@ -33,6 +42,17 @@ class EventController extends Controller
             $query->where('category',$request->category_id);
         }
         $events = $query->with('getCategory','eventImages')->get();
+        
+        foreach($events as $event){
+            $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
+                        ->where('event_id',$event->id)->first();
+            if($eventLiked){
+                $event->is_like = $eventLiked->is_like;
+            }else{
+                $event->is_like = null;
+            }
+        }
+
         return response([
             'events' => $events,
             'base_url' => 'https://einvie.com/admin/images/uploads/event/',
@@ -273,6 +293,16 @@ class EventController extends Controller
     public function getLikedEvents(){
         $eventIds = EventLikeDislike::where('is_like',1)->get()->pluck('event_id')->toArray();
         $events = Event::query()->whereIn('id',$eventIds)->with('getCategory')->get();
+        
+        foreach($events as $event){
+            $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
+                        ->where('event_id',$event->id)->first();
+            if($eventLiked){
+                $event->is_like = $eventLiked->is_like;
+            }else{
+                $event->is_like = null;
+            }
+        }
         return response([
             'events' => $events,
         ], 200);
@@ -280,6 +310,15 @@ class EventController extends Controller
     public function getDisLikedEvents(){
         $eventIds = EventLikeDislike::where('is_like',0)->get()->pluck('event_id')->toArray();
         $events = Event::query()->whereIn('id',$eventIds)->with('getCategory')->get();
+        foreach($events as $event){
+            $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
+                        ->where('event_id',$event->id)->first();
+            if($eventLiked){
+                $event->is_like = $eventLiked->is_like;
+            }else{
+                $event->is_like = null;
+            }
+        }
         return response([
             'events' => $events,
         ], 200);
@@ -289,6 +328,16 @@ class EventController extends Controller
                     ->orderBy('created_at','DESC')->get()
                     ->pluck('event_id')->toArray();
         $events = Event::query()->whereIn('id',$eventIds)->with('getCategory')->get();
+        
+        foreach($events as $event){
+            $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
+                        ->where('event_id',$event->id)->first();
+            if($eventLiked){
+                $event->is_like = $eventLiked->is_like;
+            }else{
+                $event->is_like = null;
+            }
+        }
         return response([
             'events' => $events,
         ], 200);
