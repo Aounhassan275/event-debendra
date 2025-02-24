@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
@@ -374,6 +375,31 @@ class EventController extends Controller
                 "message" => $e->getMessage(),
             ], 500);
         }
+
+    }
+    public function getHomeEvents(Request $request)
+    {
+        $radius = 10;
+        $events = Event::select(
+            "events.*",
+            DB::raw("(6371 * acos(cos(radians($request->latitude)) * cos(radians(events.lat)) 
+            * cos(radians(events.longitude) - radians($request->longitude)) 
+            + sin(radians($request->latitude)) * sin(radians(events.lat)))) AS distance"),
+            DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = '1' THEN 1 END) as like_count"),
+            DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = '0' THEN 1 END) as dislike_count")
+        )
+        ->leftJoin('event_like_dislikes', 'events.id', '=', 'event_like_dislikes.event_id')
+        ->groupBy('events.id')
+        ->having("distance", "<=", $radius)
+        ->orderBy("like_count", "desc") // First, order by likes (highest first)
+        ->orderBy("distance", "asc") // Then, order by nearest events
+        ->take(3)
+        ->get();
+
+        return response([
+            'events' => $events,
+            'base_url' => 'https://einvie.com/admin/images/uploads/event/',
+        ], 200);
 
     }
 }

@@ -25,6 +25,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'customer','middleware' => 'customer'], function () { 
         // Event Api
         Route::get('get-categories',[EventController::class,'getcategories']);
+        Route::get('get-trending-event',[EventController::class,'getHomeEvents']);
         Route::get('events',[EventController::class,'index']);
         Route::get('all-events',[EventController::class,'getAllEvents']);
         Route::get('get-event/{id}',[EventController::class,'show']);
