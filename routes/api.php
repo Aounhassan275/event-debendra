@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Customer\EventImageCommentController;
 use App\Http\Controllers\Api\Customer\EventImageLikeDislikeController;
 use App\Http\Controllers\Api\Customer\EventInvitationController;
+use App\Http\Controllers\Api\Customer\EventJoinController;
 use App\Http\Controllers\Api\Vendor\VendorProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         // Event invitation
         Route::get('get-event-image-comments',[EventImageCommentController::class,'index']);
         Route::post('store-event-image-comment',[EventImageCommentController::class,'store']);
+                      
+        // Event Join
+        Route::get('get-join-event',[EventJoinController::class,'index']);
+        Route::post('join-event',[EventJoinController::class,'store']);
               
         // Event Image Like Dislike
         Route::get('get-liked-event-images',[EventImageLikeDislikeController::class,'index']);
