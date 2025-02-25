@@ -27,15 +27,21 @@ class EventJoinController extends Controller
             }
             $joinedEvent = EventJoin::where('user_id',Auth::user()->id)
                         ->where('event_id',$request->event_id)->first();
-            if(!$joinedEvent){
+            if($joinedEvent){
+                $joinedEvent->delete();
+                return response([
+                    'message' => 'Event Unjoin successfully!',
+                ], 200);
+            }else{
+                
                 EventJoin::create([
                     'event_id' => $request->event_id,
                     'user_id' => Auth::user()->id,
                 ]);
+                return response([
+                    'message' => 'Event Joined successfully!',
+                ], 200);
             }
-            return response([
-                'message' => 'Event Join added successfully!',
-            ], 200);
         }catch (Exception $e)
         {
             return response([

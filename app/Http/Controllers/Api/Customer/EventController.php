@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Customer;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Event;
+use App\Models\EventJoin;
 use App\Models\EventLikeDislike;
 use App\Models\RecentEvent;
 use Exception;
@@ -21,7 +22,7 @@ class EventController extends Controller
         if($request->category_id){
             $query->where('category',$request->category_id);
         }
-        $events = $query->with('getCategory','eventImages')->get();
+        $events = $query->orderBy('created_at','DESC')->with('getCategory','eventImages')->get();
         foreach($events as $event){
             $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
                         ->where('event_id',$event->id)->first();
@@ -42,7 +43,7 @@ class EventController extends Controller
         if($request->category_id){
             $query->where('category',$request->category_id);
         }
-        $events = $query->with('getCategory','eventImages')->get();
+        $events = $query->orderBy('created_at','DESC')->with('getCategory','eventImages')->get();
         
         foreach($events as $event){
             $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
@@ -63,6 +64,17 @@ class EventController extends Controller
         try{ 
             $event = Event::find($id);
             $event->load('eventImages');
+            $event->load('getCategory');
+            $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
+            ->where('event_id',$event->id)->first();
+            if($eventLiked){
+                $event->is_like = $eventLiked->is_like;
+            }else{
+                $event->is_like = null;
+            }
+            $joinedEvent = EventJoin::where('user_id',Auth::user()->id)
+                        ->where('event_id',$event->id)->first();
+            $event->is_joined = $joinedEvent ? true : false;
             return response([
                 'event' => $event,
                 'base_url' => 'https://einvie.com/admin/images/uploads/event/',
@@ -380,21 +392,28 @@ class EventController extends Controller
     public function getHomeEvents(Request $request)
     {
         $radius = 10;
-        $events = Event::select(
-            "events.*",
-            DB::raw("(6371 * acos(cos(radians($request->latitude)) * cos(radians(events.latitude)) 
-            * cos(radians(events.longitude) - radians($request->longitude)) 
-            + sin(radians($request->latitude)) * sin(radians(events.latitude)))) AS distance"),
-            DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = '1' THEN 1 END) as like_count"),
-            DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = '0' THEN 1 END) as dislike_count")
-        )
-        ->leftJoin('event_like_dislikes', 'events.id', '=', 'event_like_dislikes.event_id')
-        ->groupBy('events.id')
-        ->having("distance", "<=", $radius)
-        ->orderBy("like_count", "desc") // First, order by likes (highest first)
-        ->orderBy("distance", "asc") // Then, order by nearest events
-        ->take(3)
-        ->get();
+        $query = DB::table('events')
+            ->select(
+                "events.*",
+                DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = 1 THEN 1 END) as like_count"),
+                DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = 0 THEN 1 END) as dislike_count")
+            )
+            ->leftJoin('event_like_dislikes', 'events.id', '=', 'event_like_dislikes.event_id')
+            ->groupBy('events.id')
+            ->orderBy("like_count", "desc");
+        
+        // Check if latitude & longitude exist
+        if (!empty($request->latitude) && !empty($request->longitude)) {
+            $query->addSelect(DB::raw("(6371 * acos(cos(radians(?)) * cos(radians(events.latitude)) 
+                * cos(radians(events.longitude) - radians(?)) 
+                + sin(radians(?)) * sin(radians(events.latitude)))) AS distance"))
+                ->havingRaw("distance <= ?", [$radius])
+                ->orderBy("distance", "asc")
+                ->setBindings([$request->latitude, $request->longitude, $request->latitude]);
+        }
+        
+        $events = $query->take(3)->get();
+    
 
         return response([
             'events' => $events,

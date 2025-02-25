@@ -15,14 +15,12 @@ class ProfileController extends Controller
         try{
             $request->validate([
                 'name' => 'required',
-                'email' => 'required',
                 'phone' => 'required',
                 'password' => 'nullable|min:6',
             ]);
 
             $user = Auth::user();
             $user->name = $request->name;
-            $user->email = $request->email;
             $user->phone = $request->phone;
             if($request->password){
                 $user->password = Hash::make($request->password);

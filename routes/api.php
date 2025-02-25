@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Customer\EventImageLikeDislikeController;
 use App\Http\Controllers\Api\Customer\EventInvitationController;
 use App\Http\Controllers\Api\Customer\EventJoinController;
 use App\Http\Controllers\Api\Vendor\VendorProfileController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -63,7 +64,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('store-event-image-like-dislike',[EventImageLikeDislikeController::class,'store']);
         
     }); 
-    Route::post('profile-update',[EventController::class,'update']);
+    Route::post('profile-update',[ProfileController::class,'update']);
     Route::get('logout', [AuthController::class,'logout']);
     Route::group(['prefix' => 'vendor','middleware' => 'vendor'], function () { 
         Route::get('get-vendor-types', [VendorProfileController::class,'getVendorTypes']);
