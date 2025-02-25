@@ -9,7 +9,7 @@ use App\Http\Controllers\Api\Customer\EventImageLikeDislikeController;
 use App\Http\Controllers\Api\Customer\EventInvitationController;
 use App\Http\Controllers\Api\Customer\EventJoinController;
 use App\Http\Controllers\Api\Vendor\VendorProfileController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
