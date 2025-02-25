@@ -13,19 +13,13 @@ class ProfileController extends Controller
     
     public function update(Request $request) {
         try{
-            $request->validate([
-                'name' => 'required',
-                'phone' => 'required',
-                'password' => 'nullable|min:6',
-            ]);
-
             $user = Auth::user();
-            $user->name = $request->name;
-            $user->phone = $request->phone;
             if($request->password){
                 $user->password = Hash::make($request->password);
+                $user->save();
+            }else{
+                $user->update($request->expect('password'));
             }
-            $user->save();
             $response = [
                 'user' => $user,
                 'message' => 'Profile Update successfully!'

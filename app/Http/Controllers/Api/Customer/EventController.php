@@ -391,30 +391,31 @@ class EventController extends Controller
     }
     public function getHomeEvents(Request $request)
     {
-        $radius = 10;
-        $query = DB::table('events')
-            ->select(
-                "events.*",
-                DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = 1 THEN 1 END) as like_count"),
-                DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = 0 THEN 1 END) as dislike_count")
+        if($request->latitude && $request->longitude){
+            $radius = 10;
+            $eventIds = Event::select(
+                "events.id as event_id",
+                DB::raw("(6371 * acos(cos(radians($request->latitude)) * cos(radians(events.latitude)) 
+                * cos(radians(events.longitude) - radians($request->longitude)) 
+                + sin(radians($request->latitude)) * sin(radians(events.latitude)))) AS distance"),
             )
-            ->leftJoin('event_like_dislikes', 'events.id', '=', 'event_like_dislikes.event_id')
-            ->groupBy('events.id')
-            ->orderBy("like_count", "desc");
-        
-        // Check if latitude & longitude exist
-        if (!empty($request->latitude) && !empty($request->longitude)) {
-            $query->addSelect(DB::raw("(6371 * acos(cos(radians(?)) * cos(radians(events.latitude)) 
-                * cos(radians(events.longitude) - radians(?)) 
-                + sin(radians(?)) * sin(radians(events.latitude)))) AS distance"))
-                ->havingRaw("distance <= ?", [$radius])
-                ->orderBy("distance", "asc")
-                ->setBindings([$request->latitude, $request->longitude, $request->latitude]);
+            ->having("distance", "<=", $radius)
+            ->orderBy("distance", "asc")
+            ->take(3)
+            ->get()->pluck('event_id')->toArray();
+        }else{
+            $eventIds = [];
         }
-        
-        $events = $query->take(3)->get();
-    
-
+        $events = Event::select(
+            "events.*",
+            DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = '1' THEN 1 END) as like_count"),
+            DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = '0' THEN 1 END) as dislike_count")
+        )
+        ->leftJoin('event_like_dislikes', 'events.id', '=', 'event_like_dislikes.event_id')
+        ->whereIn("id", $eventIds)
+        ->orderBy("like_count", "desc")
+        ->take(3)
+        ->get();
         return response([
             'events' => $events,
             'base_url' => 'https://einvie.com/admin/images/uploads/event/',
