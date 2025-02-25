@@ -411,13 +411,16 @@ class EventController extends Controller
             $eventIds = [];
         }
         $events = Event::select(
-            "events.*",
+            "events.id",
+            "events.title", // Add required columns explicitly
+            "events.description",
+            "events.gallery_image",
             DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = '1' THEN 1 END) as like_count"),
             DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = '0' THEN 1 END) as dislike_count")
         )
         ->leftJoin('event_like_dislikes', 'events.id', '=', 'event_like_dislikes.event_id')
         ->whereIn("id", $eventIds)
-        ->groupBy("events.id") 
+        ->groupBy("events.id", "events.title", "events.description", "events.gallery_image") // Include all selected columns
         ->orderByRaw("like_count DESC")
         ->take(3)
         ->get();
