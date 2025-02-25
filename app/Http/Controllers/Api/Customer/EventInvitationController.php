@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\EventInvitation;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class EventInvitationController extends Controller
@@ -13,7 +14,7 @@ class EventInvitationController extends Controller
     public function index(Request $request){
         try{        
             $validator = Validator::make($request->all(), [
-                'event_id' => 'required|integer',
+                'event_id' => 'nullable|integer',
             ]);
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
@@ -22,8 +23,11 @@ class EventInvitationController extends Controller
                     "message" => $messages->first(),
                 ], 500);
             }
-            $eventInvitations = EventInvitation::where('event_id',$request->event_id)
-                        ->orderBy('created_at','DESC')->get();
+            $query = EventInvitation::query()->where('user_id',Auth::user()->id);
+            if($request->event_id){
+                $query->where('event_id',$request->event_id);
+            }
+            $eventInvitations =  $query->orderBy('created_at','DESC')->get();
             return response([
                 'eventInvitations' => $eventInvitations,
                 'base_url' => 'https://einvie.com/admin/images/uploads/event/',
@@ -57,6 +61,7 @@ class EventInvitationController extends Controller
             };
             EventInvitation::create([
                 'event_id' => $request->event_id,
+                'user_id' => Auth::user()->id,
                 'image' => $imagePath,
             ]);
             return response([

@@ -8,6 +8,7 @@ class EventInvitation extends Model
 {
     protected $fillable = [
         'event_id',
+        'user_id',
         'image'
     ];
 }

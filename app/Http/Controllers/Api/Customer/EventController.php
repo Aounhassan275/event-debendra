@@ -413,22 +413,27 @@ class EventController extends Controller
         }else{
             $eventIds = [];
         }
-        $events = Event::select(
-            "events.id",
-            "events.title", // Add required columns explicitly
-            "events.description",
-            "events.gallery_image",
-            DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = '1' THEN 1 END) as like_count"),
-            DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = '0' THEN 1 END) as dislike_count")
-        )
-        ->leftJoin('event_like_dislikes', 'events.id', '=', 'event_like_dislikes.event_id')
-        ->when(!empty($eventIds), function ($query) use ($eventIds) {
-            return $query->whereIn("events.id", $eventIds);
-        })        
-        ->groupBy("events.id", "events.title", "events.description", "events.gallery_image") // Include all selected columns
-        ->orderByRaw("like_count DESC")
-        ->take(3)
-        ->get();
+        $topLikedEventIds = EventLikeDislike::select('event_id')
+            ->where('is_like', 1)
+            ->when(!empty($eventIds), function ($query) use ($eventIds) {
+                return $query->whereIn("event_id", $eventIds);
+            })
+            ->groupBy('event_id')
+            ->orderByRaw('COUNT(*) DESC')
+            ->limit(3)
+            ->pluck('event_id')
+            ->toArray();
+        $events = Event::whereIn('id', $topLikedEventIds)->with('getCategory')->get();
+        foreach($events as $event){
+            $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
+                        ->where('event_id',$event->id)
+                        ->first();
+            if($eventLiked){
+                $event->is_like = $eventLiked->is_like;
+            }else{
+                $event->is_like = null;
+            }
+        }
         return response([
             'events' => $events,
             'base_url' => 'https://einvie.com/admin/images/uploads/event/',
