@@ -394,12 +394,14 @@ class EventController extends Controller
         if($request->latitude && $request->longitude){
             $radius = 10;
             $eventIds = Event::select(
-                "events.id as event_id",
+                "events.id",
+                "events.latitude",
+                "events.longitude",
                 DB::raw("(6371 * acos(cos(radians(?)) * cos(radians(events.latitude)) 
                 * cos(radians(events.longitude) - radians(?)) 
                 + sin(radians(?)) * sin(radians(events.latitude)))) AS distance")
             )
-            ->groupBy("events.id") // Group first before using HAVING
+            ->groupBy("events.id", "events.latitude", "events.longitude")
             ->having("distance", "<=", $radius)
             ->orderBy("distance", "asc")
             ->take(3)
