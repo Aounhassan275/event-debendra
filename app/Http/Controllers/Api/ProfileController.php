@@ -17,9 +17,8 @@ class ProfileController extends Controller
             if($request->password){
                 $user->password = Hash::make($request->password);
                 $user->save();
-            }else{
-                $user->update($request->expect('password'));
             }
+            $user->update($request->expect('password'));
             $response = [
                 'user' => $user,
                 'message' => 'Profile Update successfully!'
