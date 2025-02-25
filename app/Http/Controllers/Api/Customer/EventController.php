@@ -419,7 +419,9 @@ class EventController extends Controller
             DB::raw("COUNT(CASE WHEN event_like_dislikes.is_like = '0' THEN 1 END) as dislike_count")
         )
         ->leftJoin('event_like_dislikes', 'events.id', '=', 'event_like_dislikes.event_id')
-        ->whereIn("id", $eventIds)
+        ->when(!empty($eventIds), function ($query) use ($eventIds) {
+            return $query->whereIn("events.id", $eventIds);
+        })        
         ->groupBy("events.id", "events.title", "events.description", "events.gallery_image") // Include all selected columns
         ->orderByRaw("like_count DESC")
         ->take(3)
