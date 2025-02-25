@@ -16,9 +16,10 @@ class ProfileController extends Controller
             $user = Auth::user();
             if($request->password){
                 $user->password = Hash::make($request->password);
-                $user->save();
             }
-            $user->update($request->expect('password'));
+            $user->name = $request->name;
+            $user->phone = $request->phone;
+            $user->save();
             $response = [
                 'user' => $user,
                 'message' => 'Profile Update successfully!'
