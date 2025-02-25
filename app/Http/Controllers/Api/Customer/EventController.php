@@ -395,14 +395,18 @@ class EventController extends Controller
             $radius = 10;
             $eventIds = Event::select(
                 "events.id as event_id",
-                DB::raw("(6371 * acos(cos(radians($request->latitude)) * cos(radians(events.latitude)) 
-                * cos(radians(events.longitude) - radians($request->longitude)) 
-                + sin(radians($request->latitude)) * sin(radians(events.latitude)))) AS distance"),
+                DB::raw("(6371 * acos(cos(radians(?)) * cos(radians(events.latitude)) 
+                * cos(radians(events.longitude) - radians(?)) 
+                + sin(radians(?)) * sin(radians(events.latitude)))) AS distance")
             )
+            ->groupBy("events.id") // Group first before using HAVING
             ->having("distance", "<=", $radius)
             ->orderBy("distance", "asc")
             ->take(3)
-            ->get()->pluck('event_id')->toArray();
+            ->setBindings([$request->latitude, $request->longitude, $request->latitude]) // Bind values for security
+            ->get()
+            ->pluck('event_id')
+            ->toArray();
         }else{
             $eventIds = [];
         }
@@ -413,7 +417,8 @@ class EventController extends Controller
         )
         ->leftJoin('event_like_dislikes', 'events.id', '=', 'event_like_dislikes.event_id')
         ->whereIn("id", $eventIds)
-        ->orderBy("like_count", "desc")
+        ->groupBy("events.id") 
+        ->orderByRaw("like_count DESC")
         ->take(3)
         ->get();
         return response([
