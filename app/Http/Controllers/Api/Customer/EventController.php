@@ -395,6 +395,7 @@ class EventController extends Controller
             $radius = 10;
             $eventIds = Event::select(
                 "events.id",
+                "events.id as event_id",
                 "events.latitude",
                 "events.longitude",
                 DB::raw("(6371 * acos(cos(radians(?)) * cos(radians(events.latitude)) 
