@@ -7,6 +7,7 @@ use App\Models\EventImage;
 use App\Models\EventImageLikeDislike;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class EventImageController extends Controller
@@ -33,6 +34,7 @@ class EventImageController extends Controller
             EventImage::create([
                 'event_id' => $request->event_id,
                 'image' => $imagePath,
+                'user_id' => Auth::user()->id,
             ]);
             return response([
                 'message' => 'Event Image Added Successfully!',
@@ -49,7 +51,7 @@ class EventImageController extends Controller
     public function getEventImages(Request $request){
         try{        
             $validator = Validator::make($request->all(), [
-                'event_id' => 'required|integer',
+                'event_id' => 'nullable|integer',
             ]);
             if ($validator->fails()) {
                 $messages = $validator->getMessageBag();
@@ -58,8 +60,11 @@ class EventImageController extends Controller
                     "message" => $messages->first(),
                 ], 500);
             }
-            $eventImages = EventImage::where('event_id',$request->event_id)
-                        ->orderBy('created_at','DESC')->get();
+            $query = EventImage::where('user_id',Auth::user()->id);
+            if($request->event_id){
+                $query->where('event_id',$request->event_id);
+            }
+            $eventImages = $query->orderBy('created_at','DESC')->get();
             foreach($eventImages as $eventImage){
                 $eventImage->likes = EventImageLikeDislike::where('is_like',1)
                         ->where('event_image_id',$eventImage->id)->count();

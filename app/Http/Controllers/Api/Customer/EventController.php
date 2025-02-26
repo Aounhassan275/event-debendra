@@ -405,7 +405,7 @@ class EventController extends Controller
             ->groupBy("events.id", "events.latitude", "events.longitude")
             ->having("distance", "<=", $radius)
             ->orderBy("distance", "asc")
-            ->take(3)
+            ->take(13)
             ->setBindings([$request->latitude, $request->longitude, $request->latitude]) // Bind values for security
             ->get()
             ->pluck('event_id')
@@ -420,7 +420,7 @@ class EventController extends Controller
             })
             ->groupBy('event_id')
             ->orderByRaw('COUNT(*) DESC')
-            ->limit(3)
+            ->limit(13)
             ->pluck('event_id')
             ->toArray();
         $events = Event::whereIn('id', $topLikedEventIds)->with('getCategory')->get();
