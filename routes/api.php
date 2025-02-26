@@ -44,6 +44,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
         // Event Image
         Route::get('get-event-images',[EventImageController::class,'getEventImages']);
+        Route::get('delete-event-image/{id}',[EventImageController::class,'destroy']);
         Route::post('store-event-image',[EventImageController::class,'storeEventImage']);
         
         // Event invitation

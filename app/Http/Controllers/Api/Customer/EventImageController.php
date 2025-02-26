@@ -70,10 +70,33 @@ class EventImageController extends Controller
                         ->where('event_image_id',$eventImage->id)->count();
                 $eventImage->dislikes = EventImageLikeDislike::where('is_like',0)
                         ->where('event_image_id',$eventImage->id)->count();
+                $eventLiked = EventImageLikeDislike::where('user_id',Auth::user()->id)
+                            ->where('event_image_id',$eventImage->id)
+                            ->first();
+                if($eventLiked){
+                    $eventImage->is_like = $eventLiked->is_like;
+                }else{
+                    $eventImage->is_like = null;
+                }
             }
             return response([
                 'eventImages' => $eventImages,
                 'base_url' => 'https://einvie.com/admin/images/uploads/event/',
+            ], 200);
+        }catch (Exception $e)
+        {
+            return response([
+                "success" => false,
+                "message" => $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function destroy($id){
+        try{        
+            $eventImage = EventImage::find($id);
+            $eventImage->delete();
+            return response([
+                'message' => 'Event Image Deleted Successfully!',
             ], 200);
         }catch (Exception $e)
         {
