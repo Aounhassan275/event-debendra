@@ -64,7 +64,7 @@ class EventImageController extends Controller
             if($request->event_id){
                 $query->where('event_id',$request->event_id);
             }
-            $eventImages = $query->orderBy('created_at','DESC')->get();
+            $eventImages = $query->orderBy('created_at','DESC')->with('user')->get();
             foreach($eventImages as $eventImage){
                 $eventImage->likes = EventImageLikeDislike::where('is_like',1)
                         ->where('event_image_id',$eventImage->id)->count();

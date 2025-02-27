@@ -185,7 +185,7 @@ class EventController extends Controller
     {
         try{        
             $validator = Validator::make($request->all(), [
-                'title' => 'required|string|max:255',
+                // 'title' => 'required|string|max:255',
                 'event_id' => 'required',
             ]);
             $event = Event::find($request->event_id);
@@ -198,57 +198,57 @@ class EventController extends Controller
             }
 
             // Handle file uploads
-            if ($request->hasFile('logo')) {
-                if ($event->logo && file_exists(public_path('admin/images/uploads/event/' . $event->logo))) {
-                    unlink(public_path('admin/images/uploads/event/' . $event->logo));
-                }
-                $logo = $request->file('logo');
-                $logoPath = time() . '_' . $logo->getClientOriginalName();
-                $logo->move(public_path('admin/images/uploads/event'), $logoPath);
-            };
-            if ($request->hasFile('banner')) {
-                if ($event->banner && file_exists(public_path('admin/images/uploads/event/' . $event->banner))) {
-                    unlink(public_path('admin/images/uploads/event/' . $event->banner));
-                }
-                $banner = $request->file('banner');
-                $bannerPath = time() . '_' . $banner->getClientOriginalName();
-                $banner->move(public_path('admin/images/uploads/event'), $bannerPath);
-            };
-            if ($request->hasFile('gallery_image')) {
-                if ($event->gallery_image && file_exists(public_path('admin/images/uploads/event/' . $event->gallery_image))) {
-                    unlink(public_path('admin/images/uploads/event/' . $event->gallery_image));
-                }
-                $gallery_image = $request->file('gallery_image');
-                $gallery_imagePath = time() . '_' . $gallery_image->getClientOriginalName();
-                $gallery_image->move(public_path('admin/images/uploads/event'), $gallery_imagePath);
-            };
+            // if ($request->hasFile('logo')) {
+            //     if ($event->logo && file_exists(public_path('admin/images/uploads/event/' . $event->logo))) {
+            //         unlink(public_path('admin/images/uploads/event/' . $event->logo));
+            //     }
+            //     $logo = $request->file('logo');
+            //     $logoPath = time() . '_' . $logo->getClientOriginalName();
+            //     $logo->move(public_path('admin/images/uploads/event'), $logoPath);
+            // };
+            // if ($request->hasFile('banner')) {
+            //     if ($event->banner && file_exists(public_path('admin/images/uploads/event/' . $event->banner))) {
+            //         unlink(public_path('admin/images/uploads/event/' . $event->banner));
+            //     }
+            //     $banner = $request->file('banner');
+            //     $bannerPath = time() . '_' . $banner->getClientOriginalName();
+            //     $banner->move(public_path('admin/images/uploads/event'), $bannerPath);
+            // };
+            // if ($request->hasFile('gallery_image')) {
+            //     if ($event->gallery_image && file_exists(public_path('admin/images/uploads/event/' . $event->gallery_image))) {
+            //         unlink(public_path('admin/images/uploads/event/' . $event->gallery_image));
+            //     }
+            //     $gallery_image = $request->file('gallery_image');
+            //     $gallery_imagePath = time() . '_' . $gallery_image->getClientOriginalName();
+            //     $gallery_image->move(public_path('admin/images/uploads/event'), $gallery_imagePath);
+            // };
             $event->update([
-                'title' => $request->title,
-                'category' => $request->category,
-                'subactegory_id' => $request->subactegory_id ?? null,
-                'description' => $request->description,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'website' => $request->website,
-                'address' => $request->address,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
+                // 'title' => $request->title,
+                // 'category' => $request->category,
+                // 'subactegory_id' => $request->subactegory_id ?? null,
+                // 'description' => $request->description,
+                // 'email' => $request->email,
+                // 'phone' => $request->phone,
+                // 'website' => $request->website,
+                // 'address' => $request->address,
+                // 'latitude' => $request->latitude,
+                // 'longitude' => $request->longitude,
                 'event_start_date' => $request->event_start_date,
                 'start_datetime' => $request->start_datetime,
                 'event_end_date' => $request->event_end_date,
                 'end_datetime' => $request->end_datetime,
-                'type' => $request->type,
-                'max_tickets' => $request->max_tickets,
-                'tickets_per_person' => $request->tickets_per_person,
-                'ticket_price' => $request->ticket_price,
+                // 'type' => $request->type,
+                // 'max_tickets' => $request->max_tickets,
+                // 'tickets_per_person' => $request->tickets_per_person,
+                // 'ticket_price' => $request->ticket_price,
                 'registration_start_date' => $request->registration_start_date,
                 'registration_start_datetime' => $request->registration_start_datetime,
                 'registration_end_date' => $request->registration_end_date,
                 'registration_end_datetime' => $request->registration_end_datetime,
-                'logo' => $logoPath,
-                'banner' => $bannerPath,
-                'gallery_image' => $gallery_imagePath,
-                'featured' => $request->has('featured'),
+                // 'logo' => $logoPath,
+                // 'banner' => $bannerPath,
+                // 'gallery_image' => $gallery_imagePath,
+                // 'featured' => $request->has('featured'),
             ]);
 
             return response([
