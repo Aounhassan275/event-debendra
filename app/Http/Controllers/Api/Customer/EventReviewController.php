@@ -54,7 +54,7 @@ class EventReviewController extends Controller
                 "message" => $messages->first(),
             ], 500);
         }
-        $reviews = EventReview::where('event_id',$request->event_id)->orderBy('created_at','DESC')->get();
+        $reviews = EventReview::where('event_id',$request->event_id)->orderBy('created_at','DESC')->with('user')->get();
         return response([
             'reviews' => $reviews,
         ], 200);
