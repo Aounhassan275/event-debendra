@@ -17,6 +17,12 @@ class ProfileController extends Controller
             if($request->password){
                 $user->password = Hash::make($request->password);
             }
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imagePath = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('admin/images/uploads/profile'), $imagePath);
+                $user->image = $imagePath;
+            }
             $user->name = $request->name;
             $user->phone = $request->phone;
             $user->save();

@@ -78,6 +78,7 @@ class EventImageController extends Controller
                 }else{
                     $eventImage->is_like = null;
                 }
+                $eventImage->event_title = $eventImage->event ? $eventImage->event->title : '';
             }
             return response([
                 'eventImages' => $eventImages,

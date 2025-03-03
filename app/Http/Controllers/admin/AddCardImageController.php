@@ -34,6 +34,7 @@ class AddCardImageController extends Controller
 
         // Save data to the database
         CardImage::create([
+            'category_id' => @$request->category_id ?? null,
             'category_name' => $request->category_name,
             'image_path' => $imagePath,
         ]);

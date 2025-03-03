@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Customer\CardImageController;
 use App\Http\Controllers\Api\Customer\EventController;
+use App\Http\Controllers\Api\Customer\EventImageCommentLikeDislikeController;
 use App\Http\Controllers\Api\Customer\EventImageController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Customer\EventImageCommentController;
@@ -54,7 +55,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         
         // Event invitation
         Route::get('get-event-image-comments',[EventImageCommentController::class,'index']);
+        Route::get('get-event-image-sub-comments',[EventImageCommentController::class,'getSubComments']);
         Route::post('store-event-image-comment',[EventImageCommentController::class,'store']);
+        Route::post('delete-event-image-comment',[EventImageCommentController::class,'delete']);
                       
         // Event Join
         Route::get('get-join-event',[EventJoinController::class,'index']);
@@ -67,7 +70,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         // Event Image Like Dislike
         Route::get('get-liked-event-images',[EventImageLikeDislikeController::class,'index']);
         Route::get('get-disliked-event-images',[EventImageLikeDislikeController::class,'index']);
-        Route::post('store-event-image-like-dislike',[EventImageLikeDislikeController::class,'store']);
+        Route::post('store-event-image-like-dislike',[EventImageLikeDislikeController::class,'store']);              
+        
+        // Event Image Comment Like Dislike
+        Route::post('store-event-image-comment-like-dislike',[EventImageCommentLikeDislikeController::class,'store']);
         
     }); 
     Route::post('profile-update',[ProfileController::class,'update']);
