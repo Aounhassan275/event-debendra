@@ -10,8 +10,11 @@ use App\Http\Controllers\Api\Customer\EventImageLikeDislikeController;
 use App\Http\Controllers\Api\Customer\EventInvitationController;
 use App\Http\Controllers\Api\Customer\EventJoinController;
 use App\Http\Controllers\Api\Customer\EventReviewController;
+use App\Http\Controllers\Api\Vendor\ServiceController;
+use App\Http\Controllers\Api\Vendor\ServicePricingController;
 use App\Http\Controllers\Api\Vendor\VendorProfileController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\Vendor\GalleryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -79,8 +82,25 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('profile-update',[ProfileController::class,'update']);
     Route::get('logout', [AuthController::class,'logout']);
     Route::group(['prefix' => 'vendor','middleware' => 'vendor'], function () { 
+        Route::get('get-vendor-detail', [VendorProfileController::class,'getVendorDetail']);
+        
         Route::get('get-vendor-types', [VendorProfileController::class,'getVendorTypes']);
         Route::post('update-vendor-type', [VendorProfileController::class,'updateVendorType']);
         Route::post('update-vendor-profile', [VendorProfileController::class,'updateVendorProfile']);
+              
+        // Gallery Routes
+        Route::get('get-gallery',[GalleryController::class,'index']);
+        Route::get('delete-gallery/{id}',[GalleryController::class,'destory']);
+        Route::post('store-gallery',[GalleryController::class,'store']);    
+
+        // Service Routes
+        Route::get('get-services',[ServiceController::class,'index']);
+        Route::get('delete-service/{id}',[ServiceController::class,'destory']);
+        Route::post('store-services',[ServiceController::class,'store']);
+
+        // Service Pricing Routes
+        Route::get('get-service-pricing',[ServicePricingController::class,'index']);
+        Route::get('delete-service-pricing/{id}',[ServicePricingController::class,'destory']);
+        Route::post('store-service-pricing',[ServicePricingController::class,'store']);
     });
 });

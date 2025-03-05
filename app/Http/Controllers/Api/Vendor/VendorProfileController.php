@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Vendor;
 
 use App\Http\Controllers\Controller;
+use App\Models\ServicePricing;
+use App\Models\User;
 use App\Models\Vendor;
 use App\Models\VendorsType;
 use Exception;
@@ -17,6 +19,15 @@ class VendorProfileController extends Controller
         $vendorTypes = VendorsType::query()->get();
         return response([
             'vendorTypes' => $vendorTypes,
+        ], 200);
+    }
+    public function getVendorDetail(){
+        $user = User::find(Auth::user()->id);
+        $user->load('gallery');
+        $user->load('services');
+        $user->profile = $user->get_vendor;
+        return response([
+            'user' => $user,
         ], 200);
     }
     public function updateVendorType(Request $request){
