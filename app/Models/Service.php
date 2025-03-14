@@ -10,4 +10,7 @@ class Service extends Model
         'name',
         'user_id'
     ];
+    public function users(){
+        return $this->hasMany(ServicePricing::class, 'service_id');
+    }
 }

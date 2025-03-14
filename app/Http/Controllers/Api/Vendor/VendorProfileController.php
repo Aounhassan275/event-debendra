@@ -16,7 +16,7 @@ class VendorProfileController extends Controller
 {
     public function getVendorTypes(){
         
-        $vendorTypes = VendorsType::query()->get();
+        $vendorTypes = VendorsType::query()->with('users')->get();
         return response([
             'vendorTypes' => $vendorTypes,
         ], 200);
@@ -24,7 +24,11 @@ class VendorProfileController extends Controller
     public function getVendorDetail(){
         $user = User::find(Auth::user()->id);
         $user->load('gallery');
+        $user->load('pricings');
         $user->load('services');
+        foreach($user->services as $service){
+            $service->load('pricings');
+        }
         $user->profile = $user->get_vendor;
         return response([
             'user' => $user,

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\Customer\EventImageLikeDislikeController;
 use App\Http\Controllers\Api\Customer\EventInvitationController;
 use App\Http\Controllers\Api\Customer\EventJoinController;
 use App\Http\Controllers\Api\Customer\EventReviewController;
+use App\Http\Controllers\Api\Customer\VendorController;
 use App\Http\Controllers\Api\Vendor\ServiceController;
 use App\Http\Controllers\Api\Vendor\ServicePricingController;
 use App\Http\Controllers\Api\Vendor\VendorProfileController;
@@ -77,7 +78,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         
         // Event Image Comment Like Dislike
         Route::post('store-event-image-comment-like-dislike',[EventImageCommentLikeDislikeController::class,'store']);
+        // Vendor Profile 
+        Route::get('get-vendor-detail', [VendorController::class,'getVendorDetail']);
         
+        Route::get('get-vendor-types', [VendorController::class,'getVendorTypes']);
+
+
     }); 
     Route::post('profile-update',[ProfileController::class,'update']);
     Route::get('logout', [AuthController::class,'logout']);
