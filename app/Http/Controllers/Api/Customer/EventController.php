@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Customer;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Event;
+use App\Models\EventImage;
 use App\Models\EventJoin;
 use App\Models\EventLikeDislike;
 use App\Models\RecentEvent;
@@ -168,6 +169,17 @@ class EventController extends Controller
                 'featured' => $request->has('featured'),
             ]);
 
+            if($request->hasFile('galleries')){
+                foreach ($request->file('galleries') as $galleryFile) {
+                    $imagePath = time() . '_' . $galleryFile->getClientOriginalName();
+                    $galleryFile->move(public_path('admin/images/uploads/event'), $imagePath);
+                    $gallery = new EventImage();
+                    $gallery->user_id = Auth::user()->id;
+                    $gallery->image = $imagePath;
+                    $gallery->event_id = $event->id;
+                    $gallery->save();
+                }
+            }
             return response([
                 'event' => $event,
                 'message' => 'Event added successfully!',

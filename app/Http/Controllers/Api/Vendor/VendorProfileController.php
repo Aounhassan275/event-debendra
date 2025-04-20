@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Vendor;
 
 use App\Http\Controllers\Controller;
+use App\Models\Gallery;
 use App\Models\ServicePricing;
 use App\Models\User;
 use App\Models\Vendor;
@@ -24,11 +25,10 @@ class VendorProfileController extends Controller
     public function getVendorDetail(){
         $user = User::find(Auth::user()->id);
         $user->load('gallery');
-        $user->load('pricings');
         $user->load('services');
-        foreach($user->services as $service){
-            $service->load('pricings');
-        }
+        $user->load('payment_terms');
+        $user->load('faqs');
+        $user->load('reviews');
         $user->profile = $user->get_vendor;
         return response([
             'user' => $user,
@@ -108,7 +108,23 @@ class VendorProfileController extends Controller
             $profile->facebook = $request->facebook;
             $profile->youtube = $request->youtube;
             $profile->number = $request->number;
+            $profile->latitude = $request->latitude;
+            $profile->longitude = $request->longitude;
+            $profile->description = $request->description;
+            $profile->travel_cost = $request->travel_cost;
+            $profile->loding_cost = $request->loding_cost;
+            $profile->cancelation_policy = $request->cancelation_policy;
             $profile->save();
+            if($request->hasFile('galleries')){
+                foreach ($request->file('galleries') as $galleryFile) {
+                    $galleryFilename = time() . '_' . $galleryFile->getClientOriginalName();
+                    $galleryFile->move(public_path('vendor/galleries'), $galleryFilename);
+                    $gallery = new Gallery();
+                    $gallery->user_id = Auth::user()->id;
+                    $gallery->file = $galleryFilename;
+                    $gallery->save();
+                }
+            }
             return response([
                 'profile' => $profile,
                 'message' => 'Vendor Profile Updated successfully!',

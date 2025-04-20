@@ -11,11 +11,14 @@ use App\Http\Controllers\Api\Customer\EventInvitationController;
 use App\Http\Controllers\Api\Customer\EventJoinController;
 use App\Http\Controllers\Api\Customer\EventReviewController;
 use App\Http\Controllers\Api\Customer\VendorController;
+use App\Http\Controllers\Api\Customer\VendorFaqController;
+use App\Http\Controllers\Api\Vendor\FaqController;
 use App\Http\Controllers\Api\Vendor\ServiceController;
 use App\Http\Controllers\Api\Vendor\ServicePricingController;
 use App\Http\Controllers\Api\Vendor\VendorProfileController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\Vendor\GalleryController;
+use App\Http\Controllers\Api\Vendor\VendorReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -82,6 +85,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('get-vendor-detail', [VendorController::class,'getVendorDetail']);
         
         Route::get('get-vendor-types', [VendorController::class,'getVendorTypes']);
+        
+        // Vendor FAQ 
+        Route::get('get-vendor-faqs/{id}', [VendorFaqController::class,'index']);
 
 
     }); 
@@ -104,9 +110,13 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('delete-service/{id}',[ServiceController::class,'destory']);
         Route::post('store-services',[ServiceController::class,'store']);
 
-        // Service Pricing Routes
-        Route::get('get-service-pricing',[ServicePricingController::class,'index']);
-        Route::get('delete-service-pricing/{id}',[ServicePricingController::class,'destory']);
-        Route::post('store-service-pricing',[ServicePricingController::class,'store']);
+        // Faq Routes
+        Route::get('get-faqs',[FaqController::class,'index']);
+        Route::get('delete-faq/{id}',[FaqController::class,'destory']);
+        Route::post('store-faq',[FaqController::class,'store']);
+        Route::post('update-faq',[FaqController::class,'update']);
+        // Review Routes
+        Route::get('get-reviews',[VendorReviewController::class,'index']);
+        Route::post('store-review',[VendorReviewController::class,'store']);
     });
 });

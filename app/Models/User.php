@@ -64,4 +64,13 @@ class User extends Authenticatable
     public function pricings(){
         return $this->hasMany(ServicePricing::class, 'user_id');
     }
+    public function payment_terms(){
+        return $this->hasMany(PaymentTerm::class, 'user_id');
+    }
+    public function faqs(){
+        return $this->hasMany(Faq::class, 'user_id');
+    }
+    public function reviews(){
+        return $this->hasMany(VendorReview::class, 'vendor_id');
+    }
 }

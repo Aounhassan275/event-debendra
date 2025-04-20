@@ -20,11 +20,13 @@ class ServiceController extends Controller
         try{
             $request->validate([
                 'names' => 'required',
+                'prices' => 'required',
             ]);
-            foreach ($request->names as $name) {
+            foreach ($request->names as $key => $name) {
                 $store = new Service();
                 $store->user_id = Auth::user()->id;
                 $store->name = $name;
+                $store->price = $request->price[$key];
                 $store->save();
             }
             return response([
