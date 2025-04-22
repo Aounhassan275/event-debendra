@@ -19,18 +19,39 @@ class ServiceController extends Controller
     public function store(Request $request){
         try{
             $request->validate([
-                'names' => 'required',
-                'prices' => 'required',
+                'name' => 'required',
+                'price' => 'required',
             ]);
-            foreach ($request->names as $key => $name) {
-                $store = new Service();
-                $store->user_id = Auth::user()->id;
-                $store->name = $name;
-                $store->price = $request->price[$key];
-                $store->save();
-            }
+            $store = new Service();
+            $store->user_id = Auth::user()->id;
+            $store->name = $request->name;
+            $store->price = $request->price;
+            $store->save();
             return response([
                 'message' => 'Service Added Successfully!',
+            ], 200);
+        }catch (Exception $e)
+        {
+            return response([
+                "success" => false,
+                "message" => $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function update(Request $request){
+        try{
+            $request->validate([
+                'name' => 'required',
+                'price' => 'required',
+                'service_id' => 'required',
+            ]);
+            $service = Service::find($request->service_id);
+
+            $service->name = $request->name;
+            $service->price = $request->price;
+            $service->save();
+            return response([
+                'message' => 'Service Updated Successfully!',
             ], 200);
         }catch (Exception $e)
         {

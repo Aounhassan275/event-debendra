@@ -108,7 +108,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         // Service Routes
         Route::get('get-services',[ServiceController::class,'index']);
         Route::get('delete-service/{id}',[ServiceController::class,'destory']);
-        Route::post('store-services',[ServiceController::class,'store']);
+        Route::post('store-service',[ServiceController::class,'store']);
+        Route::post('update-service',[ServiceController::class,'update']);
 
         // Faq Routes
         Route::get('get-faqs',[FaqController::class,'index']);
