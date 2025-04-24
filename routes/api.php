@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Customer\EventJoinController;
 use App\Http\Controllers\Api\Customer\EventReviewController;
 use App\Http\Controllers\Api\Customer\VendorController;
 use App\Http\Controllers\Api\Customer\VendorFaqController;
+use App\Http\Controllers\Api\Customer\VendorReviewsController;
 use App\Http\Controllers\Api\Vendor\FaqController;
 use App\Http\Controllers\Api\Vendor\ServiceController;
 use App\Http\Controllers\Api\Vendor\ServicePricingController;
@@ -85,7 +86,11 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('get-vendor-detail', [VendorController::class,'getVendorDetail']);
         
         Route::get('get-vendor-types', [VendorController::class,'getVendorTypes']);
+        Route::get('get-vendors-by-types', [VendorController::class,'getVendorsByType']);
         
+        // Review Routes
+        Route::get('get-reviews',[VendorReviewsController::class,'index']);
+        Route::post('store-review',[VendorReviewsController::class,'store']);
         // Vendor FAQ 
         Route::get('get-vendor-faqs/{id}', [VendorFaqController::class,'index']);
 

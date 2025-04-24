@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Vendor;
+namespace App\Http\Controllers\Api\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\VendorReview;
@@ -8,10 +8,14 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class VendorReviewController extends Controller
+class VendorReviewsController extends Controller
 {
-    public function index(){
-        $reviews = VendorReview::where('vendor_id', Auth::user()->id)->get();
+    public function index(Request $request){
+        if($request->vendor_id){
+            $reviews = VendorReview::where('vendor_id', $request->vendor_id)->get();
+        }else{
+            $reviews = VendorReview::where('user_id', Auth::user()->id)->get();
+        }
         return response([
             'reviews' => $reviews,
         ], 200);
