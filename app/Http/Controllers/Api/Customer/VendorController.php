@@ -29,7 +29,15 @@ class VendorController extends Controller
                 "message" => $messages->first(),
             ], 500);
         }
-        $vendors = User::query()->where('vendor_type',$request->vendor_type)->get();
+        $vendors = User::query()
+                ->where('vendor_type',$request->vendor_type)
+                ->with([
+                    'gallery',
+                    'services',
+                    'payment_terms',
+                    'faqs',
+                    'reviews'])
+                ->get();
         return response([
             'vendors' => $vendors,
         ], 200);
