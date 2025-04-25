@@ -30,14 +30,15 @@ class VendorController extends Controller
             ], 500);
         }
         $vendors = User::query()
-                ->where('vendor_type',$request->vendor_type)
-                ->with([
-                    'gallery',
-                    'services',
-                    'payment_terms',
-                    'faqs',
-                    'reviews'])
-                ->get();
+                ->where('vendor_type',$request->vendor_type)->get();
+        foreach($vendors as $vendor){    
+            $vendor->load('gallery');
+            $vendor->load('services');
+            $vendor->load('payment_terms');
+            $vendor->load('faqs');
+            $vendor->load('reviews');
+            $vendor->profile = $vendor->get_vendor;
+        }
         return response([
             'vendors' => $vendors,
         ], 200);

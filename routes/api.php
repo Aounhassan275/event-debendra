@@ -83,7 +83,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         // Event Image Comment Like Dislike
         Route::post('store-event-image-comment-like-dislike',[EventImageCommentLikeDislikeController::class,'store']);
         // Vendor Profile 
-        Route::get('get-vendor-detail', [VendorController::class,'getVendorDetail']);
+        Route::get('get-vendor-detail/{id}', [VendorController::class,'getVendorDetail']);
         
         Route::get('get-vendor-types', [VendorController::class,'getVendorTypes']);
         Route::get('get-vendors-by-types', [VendorController::class,'getVendorsByType']);
