@@ -45,11 +45,10 @@ class VendorController extends Controller
     public function getVendorDetail($id){
         $user = User::find($id);
         $user->load('gallery');
-        $user->load('pricings');
         $user->load('services');
-        foreach($user->services as $service){
-            $service->load('pricings');
-        }
+        $user->load('payment_terms');
+        $user->load('faqs');
+        $user->load('reviews');
         $user->profile = $user->get_vendor;
         return response([
             'user' => $user,
