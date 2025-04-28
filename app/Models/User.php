@@ -53,7 +53,7 @@ class User extends Authenticatable
         ];
     }
     public function get_vendor(){
-        return $this->belongsTo(Vendor::class, 'user_id');
+        return $this->hasOne(Vendor::class, 'user_id');
     }
     public function gallery(){
         return $this->hasMany(Gallery::class, 'user_id');
