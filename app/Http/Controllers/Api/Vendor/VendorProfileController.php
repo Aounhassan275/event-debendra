@@ -29,7 +29,7 @@ class VendorProfileController extends Controller
         $user->load('payment_terms');
         $user->load('faqs');
         $user->load('reviews');
-        $user->profile = $user->get_vendor;
+        $user->profile = Auth::user()->get_vendor;
         return response([
             'user' => $user,
         ], 200);
