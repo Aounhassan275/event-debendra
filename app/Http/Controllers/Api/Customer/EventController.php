@@ -316,33 +316,30 @@ class EventController extends Controller
 
     }
     public function getLikedEvents(){
-        $eventIds = EventLikeDislike::where('is_like',1)->get()->pluck('event_id')->toArray();
+        $eventIds = EventLikeDislike::where('user_id',Auth::user()->id)
+                    ->where('is_like',1)
+                    ->get()->pluck('event_id')->toArray();
         $events = Event::query()->whereIn('id',$eventIds)->with('getCategory')->get();
         
         foreach($events as $event){
-            $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
-                        ->where('event_id',$event->id)->first();
-            if($eventLiked){
-                $event->is_like = $eventLiked->is_like;
-            }else{
-                $event->is_like = null;
-            }
+            // $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
+            //             ->where('event_id',$event->id)->first();
+            // if($eventLiked){
+            //     $event->is_like = $eventLiked->is_like;
+            // }else{
+            //     $event->is_like = null;
+            // }
+            $event->is_like = 1;
         }
         return response([
             'events' => $events,
         ], 200);
     }
     public function getDisLikedEvents(){
-        $eventIds = EventLikeDislike::where('is_like',0)->get()->pluck('event_id')->toArray();
+        $eventIds = EventLikeDislike::where('is_like',0)->where('user_id',Auth::user()->id)->get()->pluck('event_id')->toArray();
         $events = Event::query()->whereIn('id',$eventIds)->with('getCategory')->get();
         foreach($events as $event){
-            $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
-                        ->where('event_id',$event->id)->first();
-            if($eventLiked){
-                $event->is_like = $eventLiked->is_like;
-            }else{
-                $event->is_like = null;
-            }
+            $event->is_like = 0;
         }
         return response([
             'events' => $events,

@@ -93,7 +93,12 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('store-review',[VendorReviewsController::class,'store']);
         // Vendor FAQ 
         Route::get('get-vendor-faqs/{id}', [VendorFaqController::class,'index']);
-
+        
+        // Vendor Like Dislike
+        Route::post('vendor-like-dislike',[VendorController::class,'vendorLikeDislike']);
+        Route::get('get-liked-vendors',[VendorController::class,'getLikedVendors']);
+        Route::get('get-disliked-vendors',[VendorController::class,'getDisLikedVendors']);
+       
 
     }); 
     Route::post('profile-update',[ProfileController::class,'update']);
