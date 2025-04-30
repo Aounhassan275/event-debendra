@@ -33,7 +33,7 @@
                             <div class="image-theme">
                                 <img src="{{ asset('admin/images/uploads/event/' . $data->banner) }}" alt="" style="height:252px; width:100%;">
                                 <div class="button">
-                                    <a href="service-details.html">View Details</a>
+                                    <a href="{{route('web.event_detail',$data->id)}}">View Details</a>
                                 </div>
                             </div>
                             <div class="content-box">

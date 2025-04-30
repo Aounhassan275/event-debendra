@@ -36,6 +36,7 @@ class EventController extends Controller
         return response([
             'events' => $events,
             'base_url' => 'https://einvie.com/admin/images/uploads/event/',
+            'shared_url' => 'http://einvie.com/event/',
         ], 200);
     }
     public function getAllEvents(Request $request){
@@ -59,6 +60,7 @@ class EventController extends Controller
         return response([
             'events' => $events,
             'base_url' => 'https://einvie.com/admin/images/uploads/event/',
+            'shared_url' => 'http://einvie.com/event/',
         ], 200);
     }
     public function show($id){
@@ -79,6 +81,7 @@ class EventController extends Controller
             return response([
                 'event' => $event,
                 'base_url' => 'https://einvie.com/admin/images/uploads/event/',
+                'shared_url' => 'http://einvie.com/event/',
             ], 200);
         }catch (Exception $e)
         {
@@ -446,6 +449,7 @@ class EventController extends Controller
         return response([
             'events' => $events,
             'base_url' => 'https://einvie.com/admin/images/uploads/event/',
+            'shared_url' => 'http://einvie.com/event/',
         ], 200);
 
     }

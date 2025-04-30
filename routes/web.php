@@ -192,6 +192,7 @@ Route::get('/',[IndexController::class, 'index'])->name('web.index');
 Route::get('/about',[IndexController::class, 'about'])->name('web.about');
 Route::get('/contact',[IndexController::class, 'contact'])->name('web.contact');
 Route::get('/events',[IndexController::class, 'events'])->name('web.events');
+Route::get('/event/{id}',[IndexController::class, 'eventDetail'])->name('web.event_detail');
 
 
 Route::get('/migrate', function() {
