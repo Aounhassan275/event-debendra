@@ -183,6 +183,7 @@ class EventController extends Controller
                     $gallery->save();
                 }
             }
+            $event->images = $event->eventImages;
             return response([
                 'event' => $event,
                 'message' => 'Event added successfully!',
