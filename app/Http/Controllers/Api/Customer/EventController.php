@@ -41,7 +41,7 @@ class EventController extends Controller
     }
     public function getAllEvents(Request $request){
 
-        $query = Event::query();
+        $query = Event::query()->where('type','public');
         if($request->category_id){
             $query->where('category',$request->category_id);
         }
@@ -436,7 +436,7 @@ class EventController extends Controller
             ->limit(13)
             ->pluck('event_id')
             ->toArray();
-        $events = Event::whereIn('id', $topLikedEventIds)->with('getCategory')->get();
+        $events = Event::whereIn('id', $topLikedEventIds)->where('type','public')->with('getCategory')->get();
         foreach($events as $event){
             $eventLiked = EventLikeDislike::where('user_id',Auth::user()->id)
                         ->where('event_id',$event->id)
