@@ -45,6 +45,7 @@ use App\Http\Controllers\vendor\GalleryController;
 use App\Http\Controllers\vendor\ReviewController;
 use App\Http\Controllers\Web\IndexController;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Http;
 
 Route::get('/login', [AuthAuthController::class, 'Login'])->name('login');
 Route::post('/login', [AuthAuthController::class, 'checkLogin'])->name('auth.checkLogin');
@@ -203,6 +204,11 @@ Route::get('/migrate', function() {
     return 'Migration done';
   });
   Route::get('/cache_clear', function() {
+    $response = Http::withHeaders([
+        'accept' => 'application/json',
+        'Authorization' => 'Bearer 5be32ff3f118b886d3dcd3d865cebb54',
+    ])->get('https://api.chati.chat/template');
+    dd($response);
     Artisan::call('config:cache');
     Artisan::call('view:clear');
     Artisan::call('cache:clear');
