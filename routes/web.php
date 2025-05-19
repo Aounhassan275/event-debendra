@@ -208,7 +208,7 @@ Route::get('/migrate', function() {
         'accept' => 'application/json',
         'Authorization' => 'Bearer 5be32ff3f118b886d3dcd3d865cebb54',
     ])->get('https://api.chati.chat/template');
-    dd($response);
+    dd($response->json());
     Artisan::call('config:cache');
     Artisan::call('view:clear');
     Artisan::call('cache:clear');
