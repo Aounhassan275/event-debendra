@@ -203,11 +203,18 @@ Route::get('/migrate', function() {
     Artisan::call('cache:clear');
     return 'Migration done';
   });
-  Route::get('/cache_clear', function() {
+  Route::get('/test-api', function() {
     $response = Http::withHeaders([
-        'accept' => 'application/json',
-        'Authorization' => 'Bearer 5be32ff3f118b886d3dcd3d865cebb54',
-    ])->get('https://api.chati.chat/template');
+      'accept' => 'application/json',
+      'Authorization' => 'Bearer 5be32ff3f118b886d3dcd3d865cebb54',
+  ])->post('https://api.chati.chat/v1/public/api/send-template', [
+      "contactNumber" => "+917008124707",
+      "templateName" => "otp_authentication",
+      "templateLanguage" => "en_US",
+      "defaultMedia" => true,
+      "parameters" => ["API"],
+      "templateId" => "656152966875424"
+  ]);
     dd($response->json());
     Artisan::call('config:cache');
     Artisan::call('view:clear');
