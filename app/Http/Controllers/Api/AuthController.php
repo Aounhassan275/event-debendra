@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
@@ -93,9 +94,25 @@ class AuthController extends Controller
             $user->expires_at =  Carbon::now()->addMinutes(15);
             $user->save();
             $response = [
-                'verification_code' =>  $user->verification_code,
+                'verification_code' =>  '',
                 'message' => 'Verfication Code Sended Successfully!'
             ];
+            try{
+                $response = Http::withHeaders([
+                    'accept' => 'application/json',
+                    'x-access-key' => '  5be32ff3f118b886d3dcd3d865cebb54',
+                    'Authorization'=> "Bearer ae01d8fd3895d19e10561831b96bf489a066918c26064a39b97e288861c92f68",
+                ])->post('https://api.chati.chat/v1/public/api/send-template', [
+                    "contactNumber" => "+".$user->phone,
+                    "templateName" => "otp_authentication",
+                    "templateLanguage" => "en_US",
+                    "defaultMedia" => true,
+                    "parameters" => [$user->verification_code],
+                    "templateId" => "656152966875424"
+                ]);
+            }catch(Exception $e){
+                //
+            }
             return response($response, 201);
         }catch(Exception $e){
             return response([
@@ -172,6 +189,22 @@ class AuthController extends Controller
             $user->save();
             // $emailService = new EmailService();
             // $emailService->sendVerification($user);
+            try{
+                $response = Http::withHeaders([
+                    'accept' => 'application/json',
+                    'x-access-key' => '  5be32ff3f118b886d3dcd3d865cebb54',
+                    'Authorization'=> "Bearer ae01d8fd3895d19e10561831b96bf489a066918c26064a39b97e288861c92f68",
+                ])->post('https://api.chati.chat/v1/public/api/send-template', [
+                    "contactNumber" => "+".$user->phone,
+                    "templateName" => "otp_authentication",
+                    "templateLanguage" => "en_US",
+                    "defaultMedia" => true,
+                    "parameters" => [$user->verification_code],
+                    "templateId" => "656152966875424"
+                ]);
+            }catch(Exception $e){
+                //
+            }
             return response([
                 'user' => $user,
                 'message' => 'Verification Code Send successfully!'
